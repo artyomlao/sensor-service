@@ -17,17 +17,18 @@ import org.springframework.web.client.RestTemplate;
 public class SensorConfiguration {
 
     private static String serviceUUID;
-    private final RestTemplate restTemplate = new RestTemplate();
+    private static final RestTemplate restTemplate = new RestTemplate();
+    private static Environment env;
+    private static boolean initialized;
 
-    private Environment env;
-    private final String registrationUrl = "/sensors/registration";
+    private static final String registrationUrl = "/sensors/registration";
 
     @Autowired
     public SensorConfiguration(final Environment env) {
         this.env = env;
     }
 
-    public void initUUID() {
+    public static void initUUID() {
         final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -40,9 +41,14 @@ public class SensorConfiguration {
         final String result = restTemplate.postForObject(url, requestEntity, String.class);
         final JSONObject responseBody = new JSONObject(result);
         serviceUUID = (String) responseBody.get("key");
+        initialized = true;
     }
 
     public static String getServiceUUID() {
+        if (!initialized) {
+            initUUID();
+        }
+
         return serviceUUID;
     }
 }
