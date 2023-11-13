@@ -25,7 +25,7 @@ public class SensorConfiguration {
 
     @Autowired
     public SensorConfiguration(final Environment env) {
-        this.env = env;
+        SensorConfiguration.env = env;
     }
 
     public static void initUUID() {
@@ -40,6 +40,7 @@ public class SensorConfiguration {
 
         final String result = restTemplate.postForObject(url, requestEntity, String.class);
         final JSONObject responseBody = new JSONObject(result);
+
         serviceUUID = (String) responseBody.get("key");
         initialized = true;
     }
